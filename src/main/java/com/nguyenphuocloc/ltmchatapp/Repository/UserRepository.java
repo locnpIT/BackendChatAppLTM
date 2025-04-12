@@ -10,7 +10,7 @@ import com.nguyenphuocloc.ltmchatapp.Entity.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     
-    List<User> fetchAllUsers();
+    
     
 
 }

@@ -28,6 +28,7 @@ public class Message {
     private String contentOfMessage;
     @CreationTimestamp
     private Date createdAt;
+    private Boolean isReport;
 
     @ManyToOne
     @JoinColumn(name = "chat_id")

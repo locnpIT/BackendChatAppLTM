@@ -30,11 +30,8 @@ public class User {
     private String fullname;
     private String password;
     private Boolean isValid;
+    private String role;
 
-
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
 
     @OneToMany(mappedBy = "user")
     private List<Message> messages;

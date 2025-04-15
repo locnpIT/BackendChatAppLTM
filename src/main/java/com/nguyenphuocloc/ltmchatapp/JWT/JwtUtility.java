@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.crypto.spec.SecretKeySpec;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.nguyenphuocloc.ltmchatapp.Entity.User;
@@ -24,12 +25,14 @@ public class JwtUtility {
 
     private static final String SECRET_KEY_ALGORITHM = "HmacSHA512";
 
+    @Value("${app.security.jwt.issuer}")
     private String issuerName;
 
+    @Value("${app.security.jwt.secret}")  
     private String secretKey;
-
+    @Value("${app.security.jwt.access-token.expiration}")
     private int accessTokenExpiration;
-
+    
     public String generateAccessToken(User user){
         if(user == null || user.getId() == null  || user.getUsername() == null || user.getRole() == null){
             throw new IllegalArgumentException("user object is null or its fields have null value");

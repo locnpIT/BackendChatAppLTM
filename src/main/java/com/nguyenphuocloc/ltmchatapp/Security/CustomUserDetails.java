@@ -28,13 +28,13 @@ public class CustomUserDetails implements UserDetails{
     @Override
     public String getPassword() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getPassword'");
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getUsername'");
+        return user.getUsername();
     }
     
     @Override

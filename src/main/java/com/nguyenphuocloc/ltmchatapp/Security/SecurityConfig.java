@@ -50,7 +50,7 @@ public class SecurityConfig {
 
     @Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.authorizeHttpRequests(auth -> auth.requestMatchers("/api/oauth/**").permitAll()
+		http.authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/students").hasAnyAuthority("read", "write")
 				.requestMatchers(HttpMethod.POST, "/api/students").hasAuthority("write")
 				.requestMatchers(HttpMethod.PUT, "/api/students").hasAuthority("write")

@@ -2,6 +2,7 @@ package com.nguyenphuocloc.ltmchatapp.Security;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -18,12 +19,16 @@ public class CustomUserDetails implements UserDetails{
         this.user = user;
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(user.getRole()));
-        return authorities;
-    }
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		if (user.getRole() == null || user.getRole().trim().isEmpty()) {
+			return Collections.emptyList();
+		}
+		List<GrantedAuthority> authorities = Collections.singletonList(
+			new SimpleGrantedAuthority("ROLE_" + user.getRole().trim().toUpperCase())
+		);
+		return authorities;
+	}
 
     @Override
     public String getPassword() {
@@ -57,8 +62,7 @@ public class CustomUserDetails implements UserDetails{
 
 	@Override
 	public boolean isEnabled() {
-		// TODO Auto-generated method stub
-		return true;
+		return user.getIsValid() != null && user.getIsValid() && !"BAN".equalsIgnoreCase(user.getRole());
 	}
 
 	public User getUser() {

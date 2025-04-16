@@ -1,5 +1,6 @@
 package com.nguyenphuocloc.ltmchatapp.Controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,10 +8,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.nguyenphuocloc.ltmchatapp.Entity.Chat;
 import com.nguyenphuocloc.ltmchatapp.Entity.Message;
@@ -21,7 +24,7 @@ import com.nguyenphuocloc.ltmchatapp.Repository.UserRepository;
 import com.nguyenphuocloc.ltmchatapp.Response.MessageResponse;
 import com.nguyenphuocloc.ltmchatapp.Security.CustomUserDetails;
 
-@Controller
+@RestController
 @RequestMapping("/api/chat")
 public class MessageController {
     
@@ -31,12 +34,28 @@ public class MessageController {
 
     @Autowired MessageRepository messageRepository;
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getAllMessageFromChat(@PathVariable Long id){
+        List<Message> messagesOfChat = messageRepository.findAllByChatId(id);
+        for (Message message : messagesOfChat) {
+            System.out.println(message);
+        }
+
+        if (messagesOfChat.size() == 0) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found message in this chat");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(messagesOfChat);
+
+
+    }
 
     @PostMapping("/{roomId}/create")
     public ResponseEntity<?> createMessage(@PathVariable Long roomId,Authentication authentication, @RequestBody Message message){
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
         User currentUser = userRepository.getById(userDetails.getUser().getId());
+       
         
         Optional<Chat> currentChat = chatRepository.findById(roomId);
         if(!currentChat.isPresent()){

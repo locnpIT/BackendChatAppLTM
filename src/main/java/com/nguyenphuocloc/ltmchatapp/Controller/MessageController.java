@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +22,7 @@ import com.nguyenphuocloc.ltmchatapp.Repository.ChatRepository;
 import com.nguyenphuocloc.ltmchatapp.Repository.MessageRepository;
 import com.nguyenphuocloc.ltmchatapp.Repository.UserRepository;
 import com.nguyenphuocloc.ltmchatapp.Response.MessageResponse;
+import com.nguyenphuocloc.ltmchatapp.Response.SingleResponse;
 import com.nguyenphuocloc.ltmchatapp.Security.CustomUserDetails;
 
 @RestController
@@ -36,10 +37,7 @@ public class MessageController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getAllMessageFromChat(@PathVariable Long id){
-        List<Message> messagesOfChat = messageRepository.findAllByChatId(id);
-        for (Message message : messagesOfChat) {
-            System.out.println(message);
-        }
+        List<MessageResponse> messagesOfChat = messageRepository.findAllMessageResponsesByChatId(id);
 
         if (messagesOfChat.size() == 0) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found message in this chat");
@@ -67,16 +65,31 @@ public class MessageController {
         message = messageRepository.save(message);
 
         // sau này refactor chuyển vào service
-        MessageResponse response = new MessageResponse();
-        response.setChatId(roomId);
-        response.setContentOfMessage(message.getContentOfMessage());
-        response.setMessageId(message.getId());
-        response.setCreatedAt(message.getCreatedAt());
-        response.setUserId(message.getUser().getId());
+        MessageResponse response = new MessageResponse(message.getId(), message.getContentOfMessage(), 
+                message.getCreatedAt(), roomId, message.getUser().getId());
+        // response.setChatId(roomId);
+        // response.setContentOfMessage(message.getContentOfMessage());
+        // response.setMessageId(message.getId());
+        // response.setCreatedAt(message.getCreatedAt());
+        // response.setUserId(message.getUser().getId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
     }
+
+    @PatchMapping("/message/{id}")
+    public ResponseEntity<?> reportMessage(@PathVariable Long id){
+
+        Message currentMessage = this.messageRepository.getById(id);
+        currentMessage.setIsReport(true);
+        currentMessage = this.messageRepository.save(currentMessage);
+        SingleResponse response = new SingleResponse();
+        response.setNotification("Report user success");
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+
+    }
+
 
     
 }

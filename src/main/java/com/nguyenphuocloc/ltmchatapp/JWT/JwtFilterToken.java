@@ -34,31 +34,26 @@ public class JwtFilterToken extends OncePerRequestFilter{
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        // TODO Auto-generated method stub
 
-        if(!hasAuthorizationBearer(request)){
+        if (!hasAuthorizationBearer(request)) {
             filterChain.doFilter(request, response);
             return;
         }
+
         String token = getBearerToken(request);
 
         try {
             Claims claims = jwtUtil.validateAccessToken(token);
-
             UserDetails userDetails = getUserDetails(claims);
 
             setAuthenticationContext(userDetails, request);
 
-            filterChain.doFilter(request, response);
-
-            clearAuthenticationContext();
-            
+            filterChain.doFilter(request, response); 
         } catch (Exception e) {
             exceptionResolver.resolveException(request, response, null, e);
         }
-        
-
     }
+
 
 
     private void clearAuthenticationContext(){

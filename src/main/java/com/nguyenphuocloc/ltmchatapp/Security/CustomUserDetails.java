@@ -62,7 +62,8 @@ public class CustomUserDetails implements UserDetails{
 
 	@Override
 	public boolean isEnabled() {
-		return user.getIsValid() != null && user.getIsValid() && !"BAN".equalsIgnoreCase(user.getRole());
+		// return user.getIsValid() != null && user.getIsValid() && !"BAN".equalsIgnoreCase(user.getRole());
+		return true;
 	}
 
 	public User getUser() {

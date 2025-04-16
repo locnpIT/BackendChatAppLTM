@@ -59,18 +59,22 @@ public class SecurityConfig {
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**").permitAll()
 				// .requestMatchers(HttpMethod.GET, "/api/students").hasAnyAuthority("read", "write")
-				.requestMatchers(HttpMethod.PATCH, "/api/admin/**").hasRole("ADMIN")
-				.requestMatchers(HttpMethod.POST, "/api/admin/**").hasRole("ADMIN")
-				.requestMatchers(HttpMethod.POST, "/api/chat/**").hasRole("USER")
-				.requestMatchers(HttpMethod.GET, "/api/chat/**").hasRole("USER")
+				.requestMatchers("/api/admin/**").hasRole("ADMIN")
+				.requestMatchers("/api/chat/**").hasRole("USER")
 				// .requestMatchers(HttpMethod.PUT, "/api/students").hasRole("write")
 				.anyRequest().authenticated())
 		.csrf(csrf -> csrf.disable())
-		.exceptionHandling(exh -> exh.authenticationEntryPoint(
-				(request, response, exception) -> {
-					response.sendError(HttpServletResponse.SC_UNAUTHORIZED, exception.getMessage());
-				}
-				))
+		.exceptionHandling(exh -> exh
+		.authenticationEntryPoint(
+				(request, response, authException) ->
+					response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage())
+			)
+			.accessDeniedHandler(
+				(request, response, accessDeniedException) ->
+					response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden: You don’t have permission")
+			)
+		)
+
 		.addFilterBefore(jwtFilter, AuthorizationFilter.class)
 		.csrf(csrf -> csrf.disable())
 		.cors(cors -> cors.configurationSource(corsConfigurationSource()));

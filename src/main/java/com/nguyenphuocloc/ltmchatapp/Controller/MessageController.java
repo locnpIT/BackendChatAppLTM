@@ -21,6 +21,7 @@ import com.nguyenphuocloc.ltmchatapp.Entity.User;
 import com.nguyenphuocloc.ltmchatapp.Repository.ChatRepository;
 import com.nguyenphuocloc.ltmchatapp.Repository.MessageRepository;
 import com.nguyenphuocloc.ltmchatapp.Repository.UserRepository;
+import com.nguyenphuocloc.ltmchatapp.Response.ChatResponse;
 import com.nguyenphuocloc.ltmchatapp.Response.MessageResponse;
 import com.nguyenphuocloc.ltmchatapp.Response.SingleResponse;
 import com.nguyenphuocloc.ltmchatapp.Security.CustomUserDetails;
@@ -67,11 +68,6 @@ public class MessageController {
         // sau này refactor chuyển vào service
         MessageResponse response = new MessageResponse(message.getId(), message.getContentOfMessage(), 
                 message.getCreatedAt(), roomId, message.getUser().getId());
-        // response.setChatId(roomId);
-        // response.setContentOfMessage(message.getContentOfMessage());
-        // response.setMessageId(message.getId());
-        // response.setCreatedAt(message.getCreatedAt());
-        // response.setUserId(message.getUser().getId());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
@@ -88,6 +84,13 @@ public class MessageController {
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
 
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllRoomChat(){
+        List<ChatResponse> listChat = chatRepository.getAllChat();
+
+        return ResponseEntity.ok().body(listChat);
     }
 
 

@@ -13,4 +13,14 @@ public class MessageResponse {
     private Date createdAt;
     private Long chatId;
     private Long userId;
+    private String senderFullname; 
+
+
+    public MessageResponse(Long messageId, String contentOfMessage, Date createdAt, Long chatId, Long userId){
+        this.messageId = messageId;
+        this.contentOfMessage = contentOfMessage;
+        this.createdAt = createdAt;
+        this.chatId = chatId;
+        this.userId = userId;
+    }
 }

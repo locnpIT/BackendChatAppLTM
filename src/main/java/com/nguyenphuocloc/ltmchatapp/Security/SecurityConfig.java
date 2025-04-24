@@ -92,7 +92,7 @@ public class SecurityConfig {
     private CorsConfigurationSource corsConfigurationSource() {
         return request -> {
             CorsConfiguration config = new CorsConfiguration();
-            config.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // ✅ bỏ dấu `/` cuối
+            config.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://192.168.2.168:5173/")); // ✅ bỏ dấu `/` cuối
             config.setAllowedMethods(Collections.singletonList("*"));
             config.setAllowCredentials(true);
             config.setAllowedHeaders(Collections.singletonList("*"));
@@ -103,26 +103,19 @@ public class SecurityConfig {
     }
 
 
-    @Order(Ordered.HIGHEST_PRECEDENCE + 99) // Đảm bảo chạy trước filter mặc định
+    @Order(Ordered.HIGHEST_PRECEDENCE + 99)
     public static class WebSocketSecurityConfig extends AbstractSecurityWebSocketMessageBrokerConfigurer {
 
         @Override
         protected void configureInbound(MessageSecurityMetadataSourceRegistry messages) {
             messages
-                    // Ai cũng có thể connect
-                    // .simpTypeMatchers(SimpMessageType.CONNECT).permitAll()
-                    // Cần xác thực để gửi message đến /app/**
-                    .simpDestMatchers("/app/**").authenticated()
-                    // Có thể cần cho phép subscribe hoặc nhận message trên /topic/**
-                    .simpDestMatchers("/topic/**").permitAll() // HOẶC .authenticated()
-                    // .simpSubscribeDestMatchers("/topic/**").permitAll() // Cụ thể hơn
-                    // Mọi message khác cần xác thực
-                    .anyMessage().authenticated();
+                .simpDestMatchers("/app/**").authenticated()
+                .simpSubscribeDestMatchers("/topic/**").authenticated() // Yêu cầu xác thực cho /topic/**
+                .anyMessage().authenticated();
         }
 
         @Override
         protected boolean sameOriginDisabled() {
-            // Disable CSRF for websockets for simplicity in dev
             return true;
         }
     }
